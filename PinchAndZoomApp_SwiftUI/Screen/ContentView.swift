@@ -13,6 +13,16 @@ struct ContentView: View {
     
     @State private var isAnimating = false
     @State private var imageScale: CGFloat = 1
+    @State private var imageOffset: CGSize = .zero
+    
+    // MARK: Private method
+    
+    private func resetImageState() {
+        withAnimation(.spring()) {
+            self.imageScale = 1
+            self.imageOffset = .zero
+        }
+    }
     
     // MARK: Body
     
@@ -30,6 +40,7 @@ struct ContentView: View {
                     .shadow(color: .black.opacity(0.2), radius: 12, x: 2, y: 2)
                     .opacity(self.isAnimating ? 1 : 0)
                     .animation(.linear(duration: 1), value: self.isAnimating)
+                    .offset(x: self.imageOffset.width, y: self.imageOffset.height)
                     .scaleEffect(self.imageScale)
                 // MARK: #1. Gesture Tap
                     .onTapGesture(count: 2, perform: {
@@ -38,11 +49,23 @@ struct ContentView: View {
                                 self.imageScale = 5
                             }
                         } else {
-                            withAnimation(.spring()) {
-                                self.imageScale = 1
-                            }
+                            self.resetImageState()
                         }
                     })
+                // MARK: #2. Gesture Drag
+                    .gesture(
+                        DragGesture()
+                            .onChanged { value in
+                                withAnimation(.linear(duration: 1)) {
+                                    self.imageOffset = value.translation
+                                }
+                            }
+                            .onEnded { _ in
+                                if self.imageScale <= 1 {
+                                    self.resetImageState()
+                                }
+                            }
+                    )
                 
             } //: ZStack
             .navigationTitle("Pinch & Zoom")
