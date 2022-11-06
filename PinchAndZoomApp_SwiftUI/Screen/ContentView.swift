@@ -14,6 +14,7 @@ struct ContentView: View {
     @State private var isAnimating = false
     @State private var imageScale: CGFloat = 1
     @State private var imageOffset: CGSize = .zero
+    @State private var isDrawerOpen = false
     
     // MARK: Private method
     
@@ -89,7 +90,7 @@ struct ContentView: View {
                             }
                     )
                 
-            } //: ZStack
+            }
             .navigationTitle("Pinch & Zoom")
             .navigationBarTitleDisplayMode(.inline)
             .onAppear(perform: {
@@ -151,6 +152,37 @@ struct ContentView: View {
                 }
                     .padding(.bottom, 30),
                 alignment: .bottom
+            ) //: ZStack
+            // MARK: Drawer
+            .overlay(
+                HStack(spacing: 12) {
+                    // Handle
+                    Image(systemName: self.isDrawerOpen
+                          ? "chevron.compact.right"
+                          : "chevron.compact.left")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 40)
+                        .padding(8)
+                        .foregroundStyle(.secondary)
+                        .onTapGesture(perform: {
+                            withAnimation(.easeOut) {
+                                self.isDrawerOpen.toggle()
+                            }
+                        })
+                    
+                    // Thumbnails
+                    Spacer()
+                    
+                } //: HStack Drawer
+                    .padding(EdgeInsets(top: 16, leading: 8, bottom: 16, trailing: 8))
+                    .background(.ultraThinMaterial)
+                    .cornerRadius(12)
+                    .opacity(self.isAnimating ? 1 : 0)
+                    .frame(width: 260)
+                    .padding(.top, UIScreen.main.bounds.height / 12)
+                    .offset(x: self.isDrawerOpen ? 20 : 215),
+                alignment: .topTrailing
             )
         } //: NavigationView
         .navigationViewStyle(.stack)
