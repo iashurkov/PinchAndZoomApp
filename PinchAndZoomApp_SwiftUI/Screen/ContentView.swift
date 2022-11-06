@@ -16,6 +16,9 @@ struct ContentView: View {
     @State private var imageOffset: CGSize = .zero
     @State private var isDrawerOpen = false
     
+    let pages: [Page] = pagesData
+    @State private var pageIndex: Int = 1
+    
     // MARK: Private method
     
     private func resetImageState() {
@@ -23,6 +26,10 @@ struct ContentView: View {
             self.imageScale = 1
             self.imageOffset = .zero
         }
+    }
+    
+    func currentPage() -> String {
+        self.pages[self.pageIndex - 1].imageName
     }
     
     // MARK: Body
@@ -35,7 +42,7 @@ struct ContentView: View {
                 
                 // MARK: Page Image
                 
-                Image("magazine-front-cover")
+                Image(self.currentPage())
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .cornerRadius(10)
@@ -172,8 +179,20 @@ struct ContentView: View {
                         })
                     
                     // Thumbnails
-                    Spacer()
-                    
+                    ForEach(self.pages) { item in
+                        Image(item.trumbnailName)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 80)
+                            .cornerRadius(8)
+                            .shadow(radius: 4)
+                            .opacity(self.isDrawerOpen ? 1 : 0)
+                            .animation(.easeOut(duration: 0.5), value: self.isDrawerOpen)
+                            .onTapGesture(perform: {
+                                self.isAnimating = true
+                                pageIndex = item.id
+                            })
+                    }
                 } //: HStack Drawer
                     .padding(EdgeInsets(top: 16, leading: 8, bottom: 16, trailing: 8))
                     .background(.ultraThinMaterial)
@@ -181,7 +200,7 @@ struct ContentView: View {
                     .opacity(self.isAnimating ? 1 : 0)
                     .frame(width: 260)
                     .padding(.top, UIScreen.main.bounds.height / 12)
-                    .offset(x: self.isDrawerOpen ? 20 : 215),
+                    .offset(x: self.isDrawerOpen ? 20 : 205),
                 alignment: .topTrailing
             )
         } //: NavigationView
