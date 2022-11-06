@@ -82,6 +82,56 @@ struct ContentView: View {
                     .padding(.top, 30),
                 alignment: .top
             )
+            // MARK: Controls
+            .overlay(
+                Group {
+                    HStack {
+                        // Scale down
+                        Button {
+                            withAnimation(.spring()) {
+                                if self.imageScale > 1 {
+                                    self.imageScale -= 1
+                                    
+                                    if self.imageScale <= 1 {
+                                        self.resetImageState()
+                                    }
+                                }
+                            }
+                        } label: {
+                            ControlImageView(icon: "minus.magnifyingglass")
+                        }
+                        
+                        // Reset
+                        Button {
+                            self.resetImageState()
+                        } label: {
+                            ControlImageView(icon: "arrow.up.left.and.down.right.magnifyingglass")
+                        }
+                        
+                        // Scale up
+                        Button {
+                            withAnimation(.spring()) {
+                                if self.imageScale < 5 {
+                                    self.imageScale += 1
+                                    
+                                    if self.imageScale > 5 {
+                                        self.imageScale = 5
+                                    }
+                                }
+                            }
+                        } label: {
+                            ControlImageView(icon: "plus.magnifyingglass")
+                        }
+                        
+                    } //: HStack Controls
+                    .padding(EdgeInsets(top: 12, leading: 20, bottom: 12, trailing: 20))
+                    .background(.ultraThinMaterial)
+                    .cornerRadius(12)
+                    .opacity(self.isAnimating ? 1 : 0)
+                }
+                    .padding(.bottom, 30),
+                alignment: .bottom
+            )
         } //: NavigationView
         .navigationViewStyle(.stack)
     }
@@ -90,5 +140,6 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+            .preferredColorScheme(.dark)
     }
 }
